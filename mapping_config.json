@@ -1,0 +1,36 @@
+{
+  "Cairo": {"base": "Cairo", "multiplier": 1.0},
+  "Giza": {"base": "Cairo", "multiplier": 0.90},
+  "Qalyubia": {"base": "Cairo", "multiplier": 0.85},
+  
+  "Alexandria": {"base": "Alexandria", "multiplier": 1.0},
+  "Matrouh": {"base": "Alexandria", "multiplier": 0.40},
+  "Beheira": {"base": "Alexandria", "multiplier": 0.80},
+  
+  "Dakahlia": {"base": "Dakahlia", "multiplier": 1.0},
+  "Damietta": {"base": "Dakahlia", "multiplier": 0.95},
+  "Kafr El Sheikh": {"base": "Dakahlia", "multiplier": 0.85},
+  "Gharbia": {"base": "Dakahlia", "multiplier": 0.90},
+  
+  "Sharqia": {"base": "Sharqia", "multiplier": 1.0},
+  "Monufia": {"base": "Sharqia", "multiplier": 0.90},
+  
+  "Port_Said": {"base": "Port_Said", "multiplier": 1.0},
+  "Ismailia": {"base": "Port_Said", "multiplier": 0.85},
+  "Suez": {"base": "Port_Said", "multiplier": 0.90},
+  
+  "Asyut": {"base": "Asyut", "multiplier": 1.0},
+  "Sohag": {"base": "Asyut", "multiplier": 0.95},
+  "Minya": {"base": "Asyut", "multiplier": 0.90},
+  "Beni Suef": {"base": "Asyut", "multiplier": 0.80},
+  "Faiyum": {"base": "Asyut", "multiplier": 0.85},
+  "Qena": {"base": "Asyut", "multiplier": 0.90},
+  
+  "Aswan": {"base": "Aswan", "multiplier": 1.0},
+  "Luxor": {"base": "Aswan", "multiplier": 0.80},
+  "Red Sea": {"base": "Aswan", "multiplier": 0.70},
+  "New Valley": {"base": "Aswan", "multiplier": 0.30},
+  
+  "North Sinai": {"base": "Port_Said", "multiplier": 0.40},
+  "South Sinai": {"base": "Port_Said", "multiplier": 0.50}
+}
