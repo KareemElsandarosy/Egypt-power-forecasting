@@ -79,9 +79,12 @@ if not model_data:
     st.error("model_pipeline.pkl not found. Run the notebook first.")
     st.stop()
 
-pipeline = model_data['pipeline']
+pipelines = model_data.get('pipelines', {})
+if not pipelines:
+    pipelines = {model_data.get('best_model', 'Default'): model_data['pipeline']}
+
+margins = model_data.get('margins', {})
 feature_order = model_data['feature_order']
-confidence_margin = model_data.get('confidence_margin', 0)
 comparison_results = model_data.get('comparison_results', [])
 best_model_name = model_data.get('best_model', 'Unknown')
 
@@ -141,7 +144,12 @@ with st.sidebar:
     selected_name = st.selectbox("Governorate", list(GOV_ARABIC.keys()), index=0)
     forecast_days = st.slider("Forecast Days", 1, 7, 3)
     st.markdown("---")
-    st.markdown(f"**Model:** {best_model_name}")
+    selected_model = st.selectbox("Prediction Model", list(pipelines.keys()), index=list(pipelines.keys()).index(best_model_name) if best_model_name in pipelines else 0)
+    pipeline = pipelines[selected_model]
+    confidence_margin = margins.get(selected_model, 0)
+    
+    st.markdown("---")
+    st.markdown(f"**Selected:** {selected_model}")
     if confidence_margin:
         st.markdown(f"**Confidence:** +/- {confidence_margin:.0f} MW")
     if comparison_results:
@@ -248,7 +256,7 @@ avg_temp = res_df['Temperature'].mean()
 cost_egp = total_kwh * 2.14
 is_peak_danger = (is_national and peak_load > 40000) or (not is_national and peak_load > 6000)
 
-k1, k2, k3, k4 = st.columns(4)
+k1, k2, k3, k4, k5 = st.columns(5)
 with k1:
     st.markdown(f'<div class="g-card"><div class="icon">⚡</div><p class="label">Total Energy</p><p class="value">{total_mwh:,.0f}</p><p class="unit">MWh | {total_kwh:,.0f} kWh</p></div>', unsafe_allow_html=True)
 with k2:
@@ -257,7 +265,9 @@ with k2:
 with k3:
     st.markdown(f'<div class="g-card"><div class="icon">🌡</div><p class="label">Avg Temperature</p><p class="value">{avg_temp:.1f} C</p><p class="unit">Celsius</p></div>', unsafe_allow_html=True)
 with k4:
-    st.markdown(f'<div class="g-card confidence"><div class="icon">🎯</div><p class="label">Best Model</p><p class="value">{best_model_name[:8]}</p><p class="unit">Margin: +/- {confidence_margin:.0f} MW</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card"><div class="icon">💳</div><p class="label">Estimated Cost</p><p class="value">{cost_egp:,.0f}</p><p class="unit">EGP | 2.14 EGP/kWh</p></div>', unsafe_allow_html=True)
+with k5:
+    st.markdown(f'<div class="g-card confidence"><div class="icon">🎯</div><p class="label">Current Model</p><p class="value">{selected_model[:8]}</p><p class="unit">MAE: {next((r["MAE"] for r in comparison_results if r["Model"] == selected_model), 0)} MW</p></div>', unsafe_allow_html=True)
 
 # ── CHART TEMPLATE ──
 CT = dict(plot_bgcolor='#ffffff', paper_bgcolor='rgba(0,0,0,0)', font=dict(color='#334155', family='Cairo'), hovermode='x unified', margin=dict(l=0, r=0, t=40, b=0), legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1))
