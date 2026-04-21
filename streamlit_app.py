@@ -12,6 +12,10 @@ import time
 # ── PAGE CONFIG ──
 st.set_page_config(page_title="EgyPower Forecast", page_icon="⚡", layout="wide", initial_sidebar_state="expanded")
 
+@st.cache_data
+def load_dataset():
+    return pd.read_csv("Egypt_Governorates_Load_Dataset_Advanced.csv")
+
 # ── CSS (Light Theme) ──
 st.markdown("""
 <style>
@@ -36,12 +40,14 @@ st.markdown("""
     .g-card .label { color: #64748b; font-size: 0.82rem; font-weight: 400; margin: 0; }
     .g-card .value { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 700; margin: 4px 0 2px 0; background: linear-gradient(135deg, #2563EB, #7C3AED); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .g-card .unit { color: #94a3b8; font-size: 0.78rem; }
+    .g-card .desc { color: #94a3b8; font-size: 0.72rem; margin-top: 8px; border-top: 1px dashed #e2e8f0; padding-top: 8px; line-height: 1.4; font-weight: 600; }
     .g-card.peak-warn { border-right: 3px solid #ef4444; }
     .g-card.peak-warn .value { background: linear-gradient(135deg, #ef4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .g-card.confidence .value { background: linear-gradient(135deg, #0ea5e9, #7C3AED); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
     .sec-title { color: #1e293b; font-size: 1.1rem; font-weight: 700; direction: rtl; text-align: right; margin: 15px 0 8px 0; display: flex; align-items: center; gap: 10px; flex-direction: row-reverse; }
     .sec-title .dot { width: 8px; height: 8px; border-radius: 50%; background: #2563EB; display: inline-block; box-shadow: 0 0 8px rgba(37,99,235,0.4); }
+    .sec-desc { color: #64748b; font-size: 0.85rem; direction: rtl; text-align: right; margin-bottom: 15px; margin-top: -5px; }
 
     .mapping-banner { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 10px; padding: 10px 16px; direction: rtl; text-align: right; color: #b45309; font-size: 0.85rem; margin-bottom: 15px; }
 
@@ -260,16 +266,16 @@ is_peak_danger = (is_national and peak_load > 40000) or (not is_national and pea
 
 k1, k2, k3, k4, k5 = st.columns(5)
 with k1:
-    st.markdown(f'<div class="g-card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div><p class="label">Total Energy</p><p class="value">{total_mwh:,.0f}</p><p class="unit">MWh | {total_kwh:,.0f} kWh</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div><p class="label">Total Energy</p><p class="value">{total_mwh:,.0f}</p><p class="unit">MWh | {total_kwh:,.0f} kWh</p><p class="desc">إجمالي استهلاك الكهرباء المتوقع للمنطقة المحددة خلال فترة التنبؤ بالكامل.</p></div>', unsafe_allow_html=True)
 with k2:
     cls = "peak-warn" if is_peak_danger else ""
-    st.markdown(f'<div class="g-card {cls}"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg></div><p class="label">Peak Load</p><p class="value">{peak_load:,.0f}</p><p class="unit">MW | {peak_time.strftime("%Y-%m-%d %H:00")}</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card {cls}"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg></div><p class="label">Peak Load</p><p class="value">{peak_load:,.0f}</p><p class="unit">MW | {peak_time.strftime("%Y-%m-%d %H:00")}</p><p class="desc">أعلى حمل كهربائي سيتم الوصول إليه ومتوقع أن يشكل أقصى ضغط على الشبكة.</p></div>', unsafe_allow_html=True)
 with k3:
-    st.markdown(f'<div class="g-card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg></div><p class="label">Avg Temperature</p><p class="value">{avg_temp:.1f} C</p><p class="unit">Celsius</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg></div><p class="label">Avg Temperature</p><p class="value">{avg_temp:.1f} C</p><p class="unit">Celsius</p><p class="desc">متوسط درجات الحرارة المتوقعة خلال الفترة والتي تؤثر بشكل مباشر على الاستهلاك.</p></div>', unsafe_allow_html=True)
 with k4:
-    st.markdown(f'<div class="g-card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div><p class="label">Estimated Cost</p><p class="value">{cost_egp:,.0f}</p><p class="unit">EGP | 2.14 EGP/kWh</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div><p class="label">Estimated Cost</p><p class="value">{cost_egp:,.0f}</p><p class="unit">EGP | 2.14 EGP/kWh</p><p class="desc">التكلفة المالية التقديرية للاستهلاك بناءً على أعلى شريحة استهلاك (2.14 جنيه).</p></div>', unsafe_allow_html=True)
 with k5:
-    st.markdown(f'<div class="g-card confidence"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg></div><p class="label">Current Model</p><p class="value">{selected_model[:8]}</p><p class="unit">MAE: {next((r["MAE"] for r in comparison_results if r["Model"] == selected_model), 0)} MW</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card confidence"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg></div><p class="label">Current Model</p><p class="value">{selected_model[:8]}</p><p class="unit">MAE: {next((r["MAE"] for r in comparison_results if r["Model"] == selected_model), 0)} MW</p><p class="desc">نموذج الذكاء الاصطناعي المستخدم حالياً وقيمة الخطأ المتوقع (MAE).</p></div>', unsafe_allow_html=True)
 
 # ── CHART TEMPLATE ──
 CT = dict(plot_bgcolor='#ffffff', paper_bgcolor='rgba(0,0,0,0)', font=dict(color='#334155', family='Cairo'), hovermode='x unified', margin=dict(l=0, r=0, t=40, b=0), legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1))
@@ -279,7 +285,7 @@ GR = dict(showgrid=True, gridcolor='rgba(0,0,0,0.06)')
 tab1, tab2, tab3, tab4 = st.tabs(["Load Forecast", "Dual-Axis", "Model Comparison", "Data & Export"])
 
 with tab1:
-    st.markdown(f'<div class="sec-title"><span class="dot"></span> Load Forecast - {selected_name}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="sec-title"><span class="dot"></span> Load Forecast - {selected_name}</div><div class="sec-desc">يعرض هذا الرسم البياني توقعات الأحمال الكهربائية على مدار الساعة، مع توضيح مناطق الثقة وموعد الذروة.</div>', unsafe_allow_html=True)
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=res_df['Datetime'], y=res_df['Predicted_Load_MW'], mode='lines', name='Predicted Load', line=dict(color='#2563EB', width=2.5, shape='spline'), fill='tozeroy', fillcolor='rgba(37,99,235,0.07)'))
     fig1.add_annotation(x=peak_time, y=peak_load, text=f"Peak: {peak_load:,.0f} MW", showarrow=True, arrowhead=2, arrowcolor='#ef4444', font=dict(color='#ef4444', size=12, family='JetBrains Mono'), bgcolor='rgba(239,68,68,0.08)', bordercolor='#ef4444', borderwidth=1, borderpad=4)
@@ -290,7 +296,7 @@ with tab1:
     st.plotly_chart(fig1, use_container_width=True)
 
 with tab2:
-    st.markdown(f'<div class="sec-title"><span class="dot"></span> Temperature vs Load Analysis</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="sec-title"><span class="dot"></span> Temperature vs Load Analysis</div><div class="sec-desc">مقارنة بصرية توضح العلاقة بين تغير درجات الحرارة وتغير مستوى استهلاك الكهرباء بمرور الوقت.</div>', unsafe_allow_html=True)
     fig2 = make_subplots(specs=[[{"secondary_y": True}]])
     fig2.add_trace(go.Scatter(x=res_df['Datetime'], y=res_df['Predicted_Load_MW'], name='Load (MW)', line=dict(color='#2563EB', width=2), fill='tozeroy', fillcolor='rgba(37,99,235,0.05)'), secondary_y=False)
     fig2.add_trace(go.Scatter(x=res_df['Datetime'], y=res_df['Temperature'], name='Temp (C)', line=dict(color='#ef4444', width=2, dash='dot')), secondary_y=True)
@@ -300,7 +306,7 @@ with tab2:
     st.plotly_chart(fig2, use_container_width=True)
 
 with tab3:
-    st.markdown('<div class="sec-title"><span class="dot"></span> Model Competition Results</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sec-title"><span class="dot"></span> Model Competition Results</div><div class="sec-desc">مقارنة بين دقة نماذج الذكاء الاصطناعي التي تم تدريبها على بيانات هذه المحافظة لاختيار النموذج الأمثل.</div>', unsafe_allow_html=True)
     if comparison_results:
         comp_df = pd.DataFrame(comparison_results).sort_values('MAE')
         best = comp_df.iloc[0]['Model']
@@ -321,16 +327,50 @@ with tab3:
         st.info("No comparison data. Re-run the notebook to generate model competition results.")
 
 with tab4:
-    st.markdown(f'<div class="sec-title"><span class="dot"></span> Full Data Table</div>', unsafe_allow_html=True)
-    display_df = res_df.copy()
-    display_df['Predicted_Load_MW'] = display_df['Predicted_Load_MW'].round(2)
-    display_df['Temperature'] = display_df['Temperature'].round(1)
-    st.dataframe(display_df, use_container_width=True, height=400)
-    csv = display_df.to_csv(index=False).encode('utf-8')
-    st.download_button("Download CSV", csv, f"forecast_{selected_name}_{forecast_days}d.csv", "text/csv")
+    st.markdown('<div class="sec-title"><span class="dot"></span> البيانات والتقارير (Data & Export)</div><div class="sec-desc">استكشاف وتحميل بيانات التوقعات الحالية أو عرض تفاصيل قاعدة البيانات الأساسية التي بُني عليها النظام.</div>', unsafe_allow_html=True)
+    
+    data_view = st.radio("اختر البيانات المراد عرضها:", ["جدول التوقعات الحالية (Forecasts)", "قاعدة البيانات الأصلية (Original Dataset)"], horizontal=True)
+    
+    if data_view == "جدول التوقعات الحالية (Forecasts)":
+        display_df = res_df.copy()
+        display_df['Predicted_Load_MW'] = display_df['Predicted_Load_MW'].round(2)
+        display_df['Temperature'] = display_df['Temperature'].round(1)
+        st.dataframe(display_df, use_container_width=True, height=400)
+        csv = display_df.to_csv(index=False).encode('utf-8')
+        st.download_button("Download Forecast CSV", csv, f"forecast_{selected_name}_{forecast_days}d.csv", "text/csv")
+    else:
+        st.markdown("### 📊 تفاصيل قاعدة البيانات (Data Profiling)", unsafe_allow_html=True)
+        orig_df = load_dataset()
+        col1, col2, col3 = st.columns(3)
+        col1.metric("إجمالي السجلات (Records)", f"{len(orig_df):,}")
+        col2.metric("عدد الأعمدة (Features)", len(orig_df.columns))
+        col3.metric("القيم المفقودة (Nulls)", orig_df.isnull().sum().sum())
+        
+        st.markdown("#### 📝 قاموس البيانات (Data Dictionary)")
+        st.markdown("""
+        * **Datetime**: الوقت والتاريخ بالساعة للرصدة.
+        * **Governorate**: المحافظة التي تم رصد الاستهلاك فيها.
+        * **Temperature**: درجة الحرارة المئوية وقت الرصد.
+        * **Humidity**: نسبة الرطوبة الجوية.
+        * **Wind_Speed**: سرعة الرياح.
+        * **Is_Weekend**: هل اليوم يوافق عطلة نهاية الأسبوع (0 = لا، 1 = نعم).
+        * **Is_Ramadan**: هل اليوم يوافق شهر رمضان الكريم (0 = لا، 1 = نعم).
+        * **Holiday_Weight**: معامل يمثل أهمية العطلة الرسمية إذا كان اليوم عطلة.
+        * **Population_Weight**: الوزن السكاني للمحافظة مقارنة بإجمالي سكان الجمهورية.
+        * **Load_MW**: الحمل الكهربائي الفعلي المستهلك بالميجاواط (Target Variable).
+        * **Hour / DayOfWeek / Month**: مستخرجات زمنية لدعم الموديل في فهم الأنماط الموسمية واليومية.
+        * **Lag_1d / Lag_7d**: الاستهلاك الفعلي في نفس الساعة من اليوم السابق والأسبوع السابق.
+        * **Temp_Rolling_Mean**: متوسط الحرارة خلال آخر 24 ساعة لتمثيل الأثر التراكمي للحرارة.
+        """)
+        
+        st.markdown("#### 🔍 عينة من البيانات (Data Head)")
+        st.dataframe(orig_df.head(100), use_container_width=True)
+        
+        st.markdown("#### 📈 الإحصائيات الوصفية (Descriptive Statistics)")
+        st.dataframe(orig_df.describe(), use_container_width=True)
 
 # ── DAILY BREAKDOWN ──
-st.markdown('<div class="sec-title"><span class="dot"></span> Daily Breakdown</div>', unsafe_allow_html=True)
+st.markdown('<div class="sec-title"><span class="dot"></span> Daily Breakdown</div><div class="sec-desc">تحليل مفصل لتوقعات كل يوم على حدة شاملة فترات الذروة واستهلاك الطاقة الكلي.</div>', unsafe_allow_html=True)
 res_df['Date'] = res_df['Datetime'].dt.date
 daily = res_df.groupby('Date').agg(peak=('Predicted_Load_MW', 'max'), low=('Predicted_Load_MW', 'min'), avg=('Predicted_Load_MW', 'mean'), energy=('Predicted_Load_MW', 'sum'), temp=('Temperature', 'mean')).reset_index()
 
