@@ -147,22 +147,22 @@ def fetch_weather(lat, lon, days):
 
 # ── SIDEBAR ──
 with st.sidebar:
-    st.markdown("### Control Panel")
+    st.markdown("### :material/tune: Control Panel")
     st.markdown("---")
-    selected_name = st.selectbox("Governorate", list(GOV_ARABIC.keys()), index=0)
-    forecast_days = st.slider("Forecast Days", 1, 7, 3)
+    selected_name = st.selectbox(":material/location_on: Governorate", list(GOV_ARABIC.keys()), index=0)
+    forecast_days = st.slider(":material/date_range: Forecast Days", 1, 7, 3)
     st.markdown("---")
-    selected_model = st.selectbox("Prediction Model", list(pipelines.keys()), index=list(pipelines.keys()).index(best_model_name) if best_model_name in pipelines else 0)
+    selected_model = st.selectbox(":material/model_training: Prediction Model", list(pipelines.keys()), index=list(pipelines.keys()).index(best_model_name) if best_model_name in pipelines else 0)
     pipeline = pipelines[selected_model]
     confidence_margin = margins.get(selected_model, 0)
     
     st.markdown("---")
-    st.markdown(f"**Selected:** {selected_model}")
+    st.markdown(f"**:material/check_circle: Selected:** {selected_model}")
     if confidence_margin:
-        st.markdown(f"**Confidence:** +/- {confidence_margin:.0f} MW")
+        st.markdown(f"**:material/analytics: Confidence:** +/- {confidence_margin:.0f} MW")
     if comparison_results:
         st.markdown("---")
-        st.markdown("### Model Scores")
+        st.markdown("### :material/scoreboard: Model Scores")
         for r in comparison_results:
             medal = '<svg width="16" height="16" style="vertical-align:-2px; margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>' if r['Model'] == best_model_name else ""
             st.markdown(f"{medal} **{r['Model']}**  <br>R2={r['R2']:.4f} | MAE={r['MAE']:.0f}", unsafe_allow_html=True)
@@ -282,7 +282,7 @@ CT = dict(plot_bgcolor='#ffffff', paper_bgcolor='rgba(0,0,0,0)', font=dict(color
 GR = dict(showgrid=True, gridcolor='rgba(0,0,0,0.06)')
 
 # ── TABS ──
-tab1, tab2, tab3, tab4 = st.tabs(["Load Forecast", "Dual-Axis", "Model Comparison", "Data & Export"])
+tab1, tab2, tab3, tab4 = st.tabs([":material/show_chart: Load Forecast", ":material/ssid_chart: Dual-Axis", ":material/query_stats: Model Comparison", ":material/table_chart: Data & Export"])
 
 with tab1:
     st.markdown(f'<div class="sec-title"><span class="dot"></span> Load Forecast - {selected_name}</div><div class="sec-desc">يعرض هذا الرسم البياني توقعات الأحمال الكهربائية على مدار الساعة، مع توضيح مناطق الثقة وموعد الذروة.</div>', unsafe_allow_html=True)
@@ -339,14 +339,14 @@ with tab4:
         csv = display_df.to_csv(index=False).encode('utf-8')
         st.download_button("Download Forecast CSV", csv, f"forecast_{selected_name}_{forecast_days}d.csv", "text/csv")
     else:
-        st.markdown("### 📊 تفاصيل قاعدة البيانات (Data Profiling)", unsafe_allow_html=True)
+        st.markdown("### :material/dataset: تفاصيل قاعدة البيانات (Data Profiling)", unsafe_allow_html=True)
         orig_df = load_dataset()
         col1, col2, col3 = st.columns(3)
         col1.metric("إجمالي السجلات (Records)", f"{len(orig_df):,}")
         col2.metric("عدد الأعمدة (Features)", len(orig_df.columns))
         col3.metric("القيم المفقودة (Nulls)", orig_df.isnull().sum().sum())
         
-        st.markdown("#### 📝 قاموس البيانات (Data Dictionary)")
+        st.markdown("#### :material/menu_book: قاموس البيانات (Data Dictionary)")
         st.markdown("""
         * **Datetime**: الوقت والتاريخ بالساعة للرصدة.
         * **Governorate**: المحافظة التي تم رصد الاستهلاك فيها.
@@ -363,10 +363,10 @@ with tab4:
         * **Temp_Rolling_Mean**: متوسط الحرارة خلال آخر 24 ساعة لتمثيل الأثر التراكمي للحرارة.
         """)
         
-        st.markdown("#### 🔍 عينة من البيانات (Data Head)")
+        st.markdown("#### :material/preview: عينة من البيانات (Data Head)")
         st.dataframe(orig_df.head(100), use_container_width=True)
         
-        st.markdown("#### 📈 الإحصائيات الوصفية (Descriptive Statistics)")
+        st.markdown("#### :material/analytics: الإحصائيات الوصفية (Descriptive Statistics)")
         st.dataframe(orig_df.describe(), use_container_width=True)
 
 # ── DAILY BREAKDOWN ──
