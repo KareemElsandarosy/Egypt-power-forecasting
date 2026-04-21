@@ -1,94 +1,67 @@
-# ⚡ النظام القومي لتوقع أحمال الكهرباء في مصر
-## Egypt Electricity Load Forecasting System
+# ⚡ Egypt Power Load Forecasting System
+<div align="center">
+  <h3>Intelligent hourly electricity demand prediction across all governorates</h3>
+  <p>A Machine Learning system utilizing XGBoost, Random Forest, and Linear Regression to forecast electricity consumption in Egypt based on real-time weather data.</p>
+</div>
 
 ---
 
-## 📌 نبذة عن المشروع
-نظام ذكي يعتمد على تعلم الآلة (XGBoost) للتنبؤ باستهلاك الكهرباء (بالميجاوات) في محافظات مصر الـ 27، مع واجهة مستخدم تفاعلية احترافية.
+## 📌 Project Overview
+This project predicts the hourly electricity load (in Megawatts) for 27 Egyptian governorates. It features a professional, interactive web dashboard built with Streamlit that automatically fetches real weather data via Open-Meteo API and applies a trained Multi-Model Machine Learning pipeline to generate accurate forecasts up to 7 days ahead.
 
-- **بيانات الطقس:** حقيقية 100% من Open-Meteo API.
-- **بيانات الأحمال:** مولدة هندسياً (Synthetic) بناءً على أوزان CAPMAS وعلاقات حرارية.
-- **الموديل:** Global XGBoost Regressor واحد لكل المحافظات.
+## 🚀 Features
+- **Multi-Model Engine:** Compare live forecasts between Random Forest, XGBoost, and Linear Regression.
+- **Dynamic Switching:** Instantly switch between models and see confidence margins (MAE & R2).
+- **Real-time Weather:** 100% real hourly weather data (Temperature, Humidity, Wind Speed) fetched automatically.
+- **Data Profiling:** In-depth interactive dataset dictionary, feature visualization, and descriptive statistics.
+- **Professional UI:** Light-themed, fully responsive dashboard with Material Icons and interactive Plotly charts.
 
----
+## 🛠️ Prerequisites
+- Python 3.11+
+- Git
 
-## 📁 ملفات المشروع
+## ⚙️ Installation & Setup (How to Run from Scratch)
 
-| الملف | الوظيفة |
-|-------|---------|
-| `Egypt_Power_Forecasting.ipynb` | النوت بوك الرئيسي (جمع البيانات + التدريب + التقييم) |
-| `streamlit_app.py` | واجهة المستخدم التفاعلية |
-| `mapping_config.json` | ملف ربط المحافظات الـ 27 بالمحافظات الـ 7 الأساسية |
-| `model_pipeline.pkl` | الموديل المدرب الجاهز (يُنتج من الـ Notebook) |
-| `implementation_plan.md` | الوثيقة التصميمية (للمراجعة الأكاديمية) |
+Follow these exact steps to run the project on any new machine:
 
----
-
-## 🛠️ متطلبات التشغيل (Prerequisites)
-
-### 1. تثبيت Python 3.11
-حمل النسخة الرسمية من:
-https://www.python.org/downloads/release/python-3110/
-
-> **مهم جداً:** أثناء التثبيت، ضع علامة ✅ على **"Add Python to PATH"**.
-
-### 2. تثبيت المكتبات المطلوبة
-افتح PowerShell أو CMD واكتب الأمر التالي:
-
-```
-pip install pandas numpy matplotlib seaborn xgboost scikit-learn joblib streamlit plotly
+### 1. Clone the Repository
+```bash
+git clone https://github.com/el-hassan-taha/egypt-power-forecasting.git
+cd egypt-power-forecasting
 ```
 
----
-
-## 🚀 خطوات التشغيل (بالترتيب)
-
-### الخطوة 1: تدريب الموديل (مرة واحدة فقط)
-
-1. افتح VS Code أو Jupyter Notebook.
-2. افتح ملف `Egypt_Power_Forecasting.ipynb`.
-3. تأكد أن الـ Kernel المختار هو **Python 3.11**.
-4. اضغط **Run All** (تشغيل الكل).
-5. انتظر حتى ينتهي (قد يستغرق 5-15 دقيقة بسبب جلب بيانات الطقس من الإنترنت).
-6. عند الانتهاء، سيظهر ملف جديد: `model_pipeline.pkl` ← هذا هو الموديل الجاهز.
-
-> **ملاحظة:** لو ملف `model_pipeline.pkl` موجود بالفعل في المجلد، يمكنك تخطي هذه الخطوة والانتقال مباشرة للخطوة 2.
-
-### الخطوة 2: تشغيل واجهة المستخدم (Streamlit)
-
-1. افتح PowerShell أو Terminal.
-2. انتقل لمجلد المشروع:
+### 2. Install Dependencies
+Open your terminal/command prompt and run:
+```bash
+pip install pandas numpy xgboost scikit-learn joblib streamlit plotly requests
 ```
-cd "المسار الكامل لمجلد المشروع"
+
+### 3. Train the Models (Generate the Pipelines)
+Before starting the web app, you must train the AI models. This script will train Linear Regression, Random Forest, and XGBoost on the dataset and save them into `model_pipeline.pkl`.
+```bash
+python scratch/train_models.py
 ```
-3. شغل التطبيق:
+*(Note: Wait until you see "✅ Pipeline saved successfully". This takes about 1-2 minutes.)*
+
+### 4. Run the Web Application
+Start the Streamlit dashboard:
+```bash
+streamlit run streamlit_app.py
 ```
-python -m streamlit run streamlit_app.py
-```
-4. سيفتح المتصفح تلقائياً على عنوان: `http://localhost:8501`
+Your browser will automatically open at `http://localhost:8501`.
 
 ---
 
-## 🎯 كيفية استخدام الواجهة
+## 📁 Repository Structure
+- `streamlit_app.py`: The main frontend application and UI.
+- `scratch/train_models.py`: The machine learning training script.
+- `Egypt_Governorates_Load_Dataset_Advanced.csv`: The base dataset containing engineered features.
+- `mapping_config.json`: Configurations mapping all 27 governorates to their base training regions.
+- `model_pipeline.pkl`: (Generated after Step 3) Contains the serialized scikit-learn pipelines and model scores.
 
-1. **اختيار النطاق الجغرافي:** من القائمة العلوية، اختر محافظة معينة أو "إجمالي الجمهورية" لرؤية التوقعات الشاملة لمصر كلها.
-2. **تحديد النطاق الزمني:** حرك شريط "الأيام" من 1 إلى 7 أيام.
-3. **قراءة البطاقات:** تعرض لك إجمالي الطاقة المتوقعة، ذروة الحمل، متوسط الحرارة، والتكلفة المالية التقديرية.
-4. **تصفح التابات:**
-   - **Load Forecast:** الرسم البياني التفاعلي الرئيسي.
-   - **Dual-Axis Analysis:** مقارنة بين الأحمال ودرجات الحرارة.
-   - **Data Table:** جدول البيانات الكامل بالأرقام.
-5. **التفصيل اليومي:** اضغط على أي يوم لرؤية أعلى وأقل ومتوسط الحمل لذلك اليوم.
-
----
-
-## ⚠️ ملاحظات مهمة
-
-- يجب الاتصال بالإنترنت لأن الموديل يسحب بيانات الطقس الحقيقية من الـ API.
-- إذا ظهرت لك رسالة خطأ `model_pipeline.pkl not found`، يجب تشغيل الـ Notebook أولاً (الخطوة 1).
-- للمحافظات غير المدربة مباشرة (مثل الجيزة)، يستخدم النظام "التشابه الإقليمي" مع أقرب محافظة مدربة (مثل القاهرة).
+## ⚠️ Important Notes
+- **Internet Connection Required:** The app must connect to the Open-Meteo API to fetch future weather data.
+- **Synthetic Load Data:** While weather data is real, electricity load data is engineered (Synthetic) to simulate real consumption patterns using CAPMAS population weights and thermal correlation relationships for academic purposes.
 
 ---
-
-## 👨‍💻 الفريق
-مشروع مادة Data Science — الترم الثاني
+**Made for Data Science Project - Term 2**
