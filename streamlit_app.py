@@ -18,7 +18,8 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
     html, body, [class*="css"] { font-family: 'Cairo', sans-serif !important; }
     .stApp { background: linear-gradient(160deg, #f8f9fc 0%, #eef1f8 40%, #f0f4fa 70%, #f8f9fc 100%); }
-    #MainMenu, footer, header {visibility: hidden;}
+    #MainMenu, footer {visibility: hidden;}
+    header {background: transparent !important;}
     .block-container { padding-top: 1rem; }
 
     .hero { text-align: center; padding: 20px 0 10px 0; position: relative; }
@@ -30,7 +31,8 @@ st.markdown("""
 
     .g-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px 22px; direction: rtl; text-align: right; transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
     .g-card:hover { transform: translateY(-4px); border-color: rgba(37,99,235,0.3); box-shadow: 0 12px 40px rgba(37,99,235,0.1); }
-    .g-card .icon { font-size: 1.5rem; margin-bottom: 6px; display: inline-block; }
+    .g-card .icon { margin-bottom: 6px; display: inline-block; }
+    .g-card .icon svg { width: 28px; height: 28px; }
     .g-card .label { color: #64748b; font-size: 0.82rem; font-weight: 400; margin: 0; }
     .g-card .value { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 700; margin: 4px 0 2px 0; background: linear-gradient(135deg, #2563EB, #7C3AED); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .g-card .unit { color: #94a3b8; font-size: 0.78rem; }
@@ -156,8 +158,8 @@ with st.sidebar:
         st.markdown("---")
         st.markdown("### Model Scores")
         for r in comparison_results:
-            emoji = "🏆" if r['Model'] == best_model_name else "  "
-            st.markdown(f"{emoji} **{r['Model']}**  \nR2={r['R2']:.4f} | MAE={r['MAE']:.0f}")
+            medal = '<svg width="16" height="16" style="vertical-align:-2px; margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>' if r['Model'] == best_model_name else ""
+            st.markdown(f"{medal} **{r['Model']}**  <br>R2={r['R2']:.4f} | MAE={r['MAE']:.0f}", unsafe_allow_html=True)
 
 selected_en = GOV_ARABIC[selected_name]
 is_national = (selected_name == "Total (National)")
@@ -258,16 +260,16 @@ is_peak_danger = (is_national and peak_load > 40000) or (not is_national and pea
 
 k1, k2, k3, k4, k5 = st.columns(5)
 with k1:
-    st.markdown(f'<div class="g-card"><div class="icon">⚡</div><p class="label">Total Energy</p><p class="value">{total_mwh:,.0f}</p><p class="unit">MWh | {total_kwh:,.0f} kWh</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div><p class="label">Total Energy</p><p class="value">{total_mwh:,.0f}</p><p class="unit">MWh | {total_kwh:,.0f} kWh</p></div>', unsafe_allow_html=True)
 with k2:
     cls = "peak-warn" if is_peak_danger else ""
-    st.markdown(f'<div class="g-card {cls}"><div class="icon">🔺</div><p class="label">Peak Load</p><p class="value">{peak_load:,.0f}</p><p class="unit">MW | {peak_time.strftime("%Y-%m-%d %H:00")}</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card {cls}"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg></div><p class="label">Peak Load</p><p class="value">{peak_load:,.0f}</p><p class="unit">MW | {peak_time.strftime("%Y-%m-%d %H:00")}</p></div>', unsafe_allow_html=True)
 with k3:
-    st.markdown(f'<div class="g-card"><div class="icon">🌡</div><p class="label">Avg Temperature</p><p class="value">{avg_temp:.1f} C</p><p class="unit">Celsius</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg></div><p class="label">Avg Temperature</p><p class="value">{avg_temp:.1f} C</p><p class="unit">Celsius</p></div>', unsafe_allow_html=True)
 with k4:
-    st.markdown(f'<div class="g-card"><div class="icon">💳</div><p class="label">Estimated Cost</p><p class="value">{cost_egp:,.0f}</p><p class="unit">EGP | 2.14 EGP/kWh</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div><p class="label">Estimated Cost</p><p class="value">{cost_egp:,.0f}</p><p class="unit">EGP | 2.14 EGP/kWh</p></div>', unsafe_allow_html=True)
 with k5:
-    st.markdown(f'<div class="g-card confidence"><div class="icon">🎯</div><p class="label">Current Model</p><p class="value">{selected_model[:8]}</p><p class="unit">MAE: {next((r["MAE"] for r in comparison_results if r["Model"] == selected_model), 0)} MW</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="g-card confidence"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg></div><p class="label">Current Model</p><p class="value">{selected_model[:8]}</p><p class="unit">MAE: {next((r["MAE"] for r in comparison_results if r["Model"] == selected_model), 0)} MW</p></div>', unsafe_allow_html=True)
 
 # ── CHART TEMPLATE ──
 CT = dict(plot_bgcolor='#ffffff', paper_bgcolor='rgba(0,0,0,0)', font=dict(color='#334155', family='Cairo'), hovermode='x unified', margin=dict(l=0, r=0, t=40, b=0), legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1))
@@ -305,7 +307,7 @@ with tab3:
         html = '<div class="model-row">'
         for _, r in comp_df.iterrows():
             w = "winner" if r['Model'] == best else ""
-            badge = "🏆 " if r['Model'] == best else ""
+            badge = '<svg width="16" height="16" style="vertical-align:-2px; margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>' if r['Model'] == best else ""
             html += f'<div class="model-chip {w}"><div class="mname">{badge}{r["Model"]}</div><div class="mval">R2: {r["R2"]:.4f}</div><div class="mlab">MAE: {r["MAE"]:.1f} | RMSE: {r["RMSE"]:.1f}</div></div>'
         html += '</div>'
         st.markdown(html, unsafe_allow_html=True)
