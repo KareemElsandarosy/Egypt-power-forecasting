@@ -51,9 +51,10 @@ st.markdown("""
 
     .mapping-banner { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 10px; padding: 10px 16px; direction: rtl; text-align: right; color: #b45309; font-size: 0.85rem; margin-bottom: 15px; }
 
-    .footer-honesty { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; direction: rtl; text-align: right; color: #64748b; font-size: 0.8rem; margin-top: 30px; line-height: 1.8; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .footer-honesty { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; direction: ltr; text-align: left; color: #64748b; font-size: 0.8rem; margin-top: 30px; line-height: 1.8; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .footer-honesty b { color: #334155; }
 
+    .stTabs { margin-top: 25px; }
     .stTabs [data-baseweb="tab-list"] { gap: 8px; }
     .stTabs [data-baseweb="tab"] { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; color: #64748b; padding: 8px 18px; }
     .stTabs [aria-selected="true"] { background: rgba(37,99,235,0.08) !important; border-color: rgba(37,99,235,0.3) !important; color: #2563EB !important; }
