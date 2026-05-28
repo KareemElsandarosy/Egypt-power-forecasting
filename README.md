@@ -26,7 +26,7 @@ Follow these exact steps to run the project on any new machine:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/el-hassan-taha/egypt-power-forecasting.git
+git clone https://github.com/KareemElsandarosy/Egypt-power-forecasting
 cd egypt-power-forecasting
 ```
 
